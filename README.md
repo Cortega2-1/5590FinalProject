@@ -104,7 +104,7 @@ uvicorn app.main:app --reload
 curl -X POST http://localhost:8000/auth/register \
   -H "Content-Type: application/json" \
   -d '{"username": "fill_out_username", "password": "fill_out_password"}'
----
+```
 
 ## Tech Stack
 
