@@ -86,7 +86,7 @@ export default function LoginPage() {
                 </form>
 
                 <p className="login-footer">
-                    CSCI 5590 · Ortega &amp; Kahn
+                    5590 Final Project · Ortega &amp; Kahn
                 </p>
             </div>
         </div>

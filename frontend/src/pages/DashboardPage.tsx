@@ -54,7 +54,7 @@ export default function DashboardPage() {
                 <header className="dash-header">
                     <div>
                         <h2>Research Dashboard</h2>
-                        <p className="dash-subheading">CSCI 5590 · Ortega &amp; Kahn</p>
+                        <p className="dash-subheading">5590 Final Project · Ortega &amp; Kahn</p>
                     </div>
                     <div className="dash-user">
                         <span className="user-dot" />
