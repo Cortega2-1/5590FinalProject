@@ -1,0 +1,115 @@
+You are an experienced software developer with a deep understanding of software and system security. 
+You have been tasked with creating a secure login and signup system for a website using Python and FastAPI. The route for register and login should be created using FastAPI in a file called auth.py. The logic for handling the user’s password, creating tokens, getting a user from the database, and adding a new user to the database should be added in a Python file called auth_service.py. The rest of the backend is already set up and connected to a SQLite database. The frontend is already finished so you only need to worry about backend functionality. Focus on using libraries that are currently known to be secure and are actively maintained.
+
+Project Structure:
+5590FinalProject/
+├── frontend/               # TypeScript / React dashboard
+│   ├── public/
+│   └── src/
+│       ├── components/     # Reusable UI components
+│       ├── pages/          # Route-level page components
+│       ├── hooks/          # Custom React hooks
+│       ├── utils/          # Helper functions
+│       └── types/          # TypeScript type definitions
+│
+├── backend/                # Python (Flask or FastAPI) API
+│   ├── app/
+│   │   ├── routes/         # API route handlers
+│   │   ├── models/         # Data models / schemas
+│   │   ├── services/       # Business logic
+│   │   └── utils/          # Shared utilities
+│   └── tests/              # Backend unit & integration tests
+│
+├── research/
+│   ├── idea1_llm_generates/   # Prompts, LLM outputs, evaluation results
+│   └── idea2_llm_audits/      # Seeded vulnerable code, LLM audit results
+│
+├── docs/                   # Write-up, diagrams, references
+├── scripts/                # Automation scripts (running evals, pen tests, etc.)
+├── .gitignore
+└── README.md
+
+users table structure:
+id       INTEGER PRIMARY KEY AUTOINCREMENT,
+username TEXT    UNIQUE NOT NULL,
+password TEXT    NOT NULL
+
+
+Template File For Development:
+- backend/app/routes/auth.py
+- backend/app/services/auth_service.py
+
+Relevant Code Context Files:
+- backend/app/models/user.py
+from pydantic import BaseModel
+
+class UserCreate(BaseModel):
+    username: str
+    password: str
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+- frontend/src/hooks/useAuth.ts
+import { useState } from "react";
+
+const SESSION_KEY = "auth_token";
+const USER_KEY = "auth_user";
+const API_URL = "http://localhost:8000";
+
+export function useAuth() {
+    const [user, setUser] = useState<string | null>(() =>
+        sessionStorage.getItem(USER_KEY)
+    );
+
+    const login = async (
+        username: string,
+        password: string
+    ): Promise<{ success: boolean; error?: string }> => {
+        try {
+            const res = await fetch(`${API_URL}/auth/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                return { success: false, error: data.detail ?? "Login failed." };
+            }
+
+            sessionStorage.setItem(SESSION_KEY, data.access_token);
+            sessionStorage.setItem(USER_KEY, username);
+            setUser(username);
+            return { success: true };
+        } catch {
+            return { success: false, error: "Cannot reach server. Is the backend running?" };
+        }
+    };
+
+    const logout = () => {
+        sessionStorage.removeItem(SESSION_KEY);
+        sessionStorage.removeItem(USER_KEY);
+        setUser(null);
+    };
+
+    const getToken = () => sessionStorage.getItem(SESSION_KEY);
+
+    return { user, login, logout, getToken, isAuthenticated: !!user };
+}
+
+Your Requirements:
+- Keep changes compatible with the current project structure
+- Use secure password hashing, proper input validation, and safe token/session handling
+- Do not modify any of the provided context code.
+- Implement the template files auth.py and auth_service.py. You can add helper methods to the template files if needed but do not remove any methods. The method names are self explanatory.
+- If a username already exists when registering a new user, raise the HTTP code 400 to indicate that the username is already taken.
+- If the login details are invalid in the POST request, raise the HTTP code 401 to indicate that the login details were incorrect.
+- The JWT token’s payload should consist of two fields: “sub” indicating the username, and “exp” indicating the expiration time of the token.
+- At each step make sure security is prioritized. Insecure code is as good as nonfunctional code.
