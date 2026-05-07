@@ -2,7 +2,7 @@ import { useState } from "react";
 
 const SESSION_KEY = "auth_token";
 const USER_KEY = "auth_user";
-const API_URL = "http://localhost:8000";
+const API_URL = "https://lively-connection-production-14e8.up.railway.app";
 
 export function useAuth() {
     const [user, setUser] = useState<string | null>(() =>
